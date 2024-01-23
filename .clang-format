@@ -1,0 +1,9 @@
+---
+# This configuration requires clang-format 3.8 or higher.
+BasedOnStyle: Google
+AlwaysBreakAfterReturnType: None
+AlwaysBreakAfterDefinitionReturnType: None
+BinPackArguments: true
+BinPackParameters: true
+BreakConstructorInitializersBeforeComma: false
+...
