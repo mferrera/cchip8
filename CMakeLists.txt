@@ -16,7 +16,7 @@ option(ENABLE_TESTING "Enable testing and building the tests." OFF)
 if (MSVC)
   add_compile_options(/W3 /WX)
 else()
-  add_compile_options(-W -Wall -Werror)
+  add_compile_options(-W -Wall)
 endif()
 
 include_directories(
@@ -24,10 +24,12 @@ include_directories(
   "."
 )
 add_subdirectory(src/cchip8)
+add_subdirectory(third_party/SDL)
 
 if(ENABLE_TESTING)
   include(CTest)
   enable_testing()
+  add_subdirectory(third_party/googletest)
   add_subdirectory(tests)
 endif()
 
