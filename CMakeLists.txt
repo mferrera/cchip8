@@ -19,11 +19,7 @@ else()
   add_compile_options(-W -Wall)
 endif()
 
-include_directories(
-  "${PROJECT_BINARY_DIR}/include"
-  "."
-)
-add_subdirectory(src/cchip8)
+add_subdirectory(src)
 add_subdirectory(third_party/SDL)
 
 if(ENABLE_TESTING)
@@ -32,4 +28,3 @@ if(ENABLE_TESTING)
   add_subdirectory(third_party/googletest)
   add_subdirectory(tests)
 endif()
-
