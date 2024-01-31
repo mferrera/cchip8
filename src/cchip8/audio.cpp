@@ -1,4 +1,3 @@
-#include <SDL.h>
 #include <cchip8/audio.h>
 
 #include <cmath>
@@ -30,7 +29,7 @@ void Audio::StopBeep() {
   SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(m_stream));
 }
 
-double Audio::GetSample() {
+double Audio::GetSample() const {
   return std::sin(m_wave_pos) * m_volume + AUDIO_8BIT_BIAS;
 }
 

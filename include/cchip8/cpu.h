@@ -49,7 +49,7 @@ class Cpu {
   uint8_t t_sound{0};
 
   void Reset();
-  uint8_t RandomByte();
+  uint8_t RandomByte() const;
 
   void CLS(Memory &memory);
   void RET(Memory &memory);

@@ -4,6 +4,7 @@
 #include <cchip8/input.h>
 #include <cchip8/memory.h>
 #include <cchip8/rom.h>
+#include <cchip8/window.h>
 
 #include <chrono>
 #include <iostream>
@@ -24,7 +25,7 @@ bool Emulator::LoadRom(const Rom& rom) {
 }
 
 void Emulator::Reset() {
-  m_display.Clear();
+  m_window.Clear();
   m_cpu.Reset();
   m_memory.Reset();
   m_input.Reset();
@@ -36,7 +37,7 @@ bool Emulator::InitDevices() {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
     return false;
   }
-  auto initDisplay = m_display.Init();
+  auto initDisplay = m_window.Init();
   auto initAudio = m_audio.Init();
   return initDisplay && initAudio;
 }
@@ -56,19 +57,14 @@ void Emulator::MainLoop() {
   using namespace std::chrono;
   auto lastDrawTime = high_resolution_clock::now();
 
-  while (m_running && m_display.running) {
+  while (m_running && m_window.running) {
     auto currentTime = high_resolution_clock::now();
     auto elapsedTime = duration_cast<milliseconds>(currentTime - lastDrawTime);
 
     if (elapsedTime.count() > (1000.0 / 60.0)) {
       lastDrawTime = currentTime;
       Update();
-      if (m_draw) {
-        Draw();
-        m_draw = false;
-      }
     }
-
     std::this_thread::sleep_for(milliseconds(16));
   }
 }
@@ -82,7 +78,7 @@ void Emulator::UpdateTimers() {
   }
 }
 
-void Emulator::ToggleSound() {
+void Emulator::UpdateSound() {
   if (m_cpu.t_sound > 0) {
     m_audio.StartBeep();
   } else {
@@ -101,7 +97,7 @@ void Emulator::HandleEvent(const SDL_Event& event) {
 void Emulator::PollEvents() {
   while (SDL_PollEvent(&m_event) != 0) {
     m_input.HandleEvent(m_event);
-    m_display.HandleEvent(m_event);
+    m_window.HandleEvent(m_event);
     HandleEvent(m_event);
   }
 }
@@ -111,10 +107,14 @@ void Emulator::Update() {
     Tick();
   }
   UpdateTimers();
-  ToggleSound();
+  UpdateSound();
   PollEvents();
   for (auto tick = 0; tick < TICKS_PER_FRAME / 2; ++tick) {
     Tick();
+  }
+  if (m_draw) {
+    m_window.Draw(m_memory);
+    m_draw = false;
   }
 }
 
@@ -204,20 +204,8 @@ void Emulator::Tick() {
   }
 }
 
-void Emulator::Draw() {
-  m_display.Clear();
-  for (auto y = 0; y < DISPLAY_HEIGHT; ++y) {
-    for (auto x = 0; x < DISPLAY_WIDTH; ++x) {
-      if (m_memory.vram.at(x + (y * DISPLAY_WIDTH))) {
-        m_display.DrawPixel(x, y);
-      }
-    }
-  }
-  m_display.RenderPresent();
-}
-
 Emulator::~Emulator() {
-  m_display.Quit();
+  m_window.Quit();
   m_audio.Quit();
   SDL_Quit();
 }

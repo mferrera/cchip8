@@ -5,9 +5,13 @@ namespace cchip8 {
 
 void Input::Reset() { m_keyboard.fill(false); }
 
-bool Input::IsDown(uint8_t key) { return m_keyboard.at(m_keycode_map.at(key)); }
+bool Input::IsDown(uint8_t key) const {
+  return m_keyboard.at(m_keycode_map.at(key));
+}
 
-bool Input::IsUp(uint8_t key) { return !m_keyboard.at(m_keycode_map.at(key)); }
+bool Input::IsUp(uint8_t key) const {
+  return !m_keyboard.at(m_keycode_map.at(key));
+}
 
 void Input::HandleEvent(const SDL_Event &event) {
   auto keycode = static_cast<size_t>(event.key.keysym.sym);
