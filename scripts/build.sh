@@ -4,4 +4,4 @@ export CXX=clang++
 export CC=clang
 
 cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-make VERBOSE=1
+cmake --build .
