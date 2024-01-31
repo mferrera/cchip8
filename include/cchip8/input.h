@@ -14,8 +14,8 @@ namespace cchip8 {
 class Input {
  public:
   void Reset();
-  bool IsDown(uint8_t key);
-  bool IsUp(uint8_t key);
+  bool IsDown(uint8_t key) const;
+  bool IsUp(uint8_t key) const;
   void HandleEvent(const SDL_Event &event);
 
  private:

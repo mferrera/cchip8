@@ -37,7 +37,7 @@ class Audio {
     SDL_PutAudioStreamData(stream, audio->m_audio_buffer.data(), total_amount);
   }
 
-  double GetSample();
+  double GetSample() const;
   void IncrementWavePosition();
 
   const SDL_AudioSpec m_spec{

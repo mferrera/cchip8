@@ -63,7 +63,7 @@ class Instruction {
   /* The full instruction as bytes */
   uint16_t instruction() const { return m_instruction; }
 
-  Opcode Decode() {
+  Opcode Decode() const {
     switch (msn()) {
       case 0x00:
         switch (addr()) {

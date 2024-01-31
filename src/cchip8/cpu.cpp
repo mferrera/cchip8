@@ -19,7 +19,7 @@ void Cpu::Reset() {
   t_sound = 0;
 }
 
-uint8_t Cpu::RandomByte() {
+uint8_t Cpu::RandomByte() const {
   std::random_device rd;
   std::mt19937 rng(rd());
   std::uniform_int_distribution<int> distribution(0, 255);

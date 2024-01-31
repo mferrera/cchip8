@@ -3,11 +3,11 @@
 
 #include <cchip8/audio.h>
 #include <cchip8/cpu.h>
-#include <cchip8/display.h>
 #include <cchip8/input.h>
 #include <cchip8/instruction.h>
 #include <cchip8/memory.h>
 #include <cchip8/rom.h>
+#include <cchip8/window.h>
 
 #define TICKS_PER_FRAME 10
 
@@ -31,20 +31,19 @@ class Emulator {
   Cpu m_cpu{};
   Memory m_memory{};
   Input m_input{};
-  Display m_display{};
   Audio m_audio{};
+  Window m_window{};
   SDL_Event m_event{};
 
   bool InitDevices();
   void MainLoop();
   void UpdateTimers();
-  void ToggleSound();
+  void UpdateSound();
   void HandleEvent(const SDL_Event& event);
   void PollEvents();
 
   Instruction Fetch();
   void Update();
-  void Draw();
   void Tick();
 };
 
