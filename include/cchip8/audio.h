@@ -17,8 +17,9 @@ class Audio {
   [[nodiscard]] bool Init();
 
   void Reset();
-  void StartBeep();
-  void StopBeep();
+  void StartTone();
+  void PauseTone();
+  bool IsPaused() const;
 
   void setFrequency(double frequency) { m_frequency = frequency; }
   void setVolume(double volume) { m_volume = volume; }

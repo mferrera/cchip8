@@ -80,14 +80,35 @@ void Emulator::UpdateTimers() {
 
 void Emulator::UpdateSound() {
   if (m_cpu.t_sound > 0) {
-    m_audio.StartBeep();
+    m_audio.StartTone();
   } else {
-    m_audio.StopBeep();
+    m_audio.PauseTone();
+  }
+}
+
+void Emulator::Pause() {
+  m_paused = true;
+  if (!m_audio.IsPaused()) {
+    m_audio.PauseTone();
+    m_paused_audio = true;
+  }
+}
+
+void Emulator::UnPause() {
+  m_paused = false;
+  if (m_paused_audio) {
+    m_audio.StartTone();
+    m_paused_audio = false;
   }
 }
 
 void Emulator::HandleEvent(const SDL_Event& event) {
   switch (event.type) {
+    case SDL_EVENT_KEY_DOWN:
+      if (event.key.keysym.sym == SDLK_SPACE) {
+        m_paused ? UnPause() : Pause();
+      }
+      break;
     case SDL_EVENT_QUIT:
       m_running = false;
       break;
@@ -103,12 +124,15 @@ void Emulator::PollEvents() {
 }
 
 void Emulator::Update() {
+  PollEvents();
+
+  if (m_paused) return;
+
   for (auto tick = 0; tick < TICKS_PER_FRAME / 2; ++tick) {
     Tick();
   }
   UpdateTimers();
   UpdateSound();
-  PollEvents();
   for (auto tick = 0; tick < TICKS_PER_FRAME / 2; ++tick) {
     Tick();
   }

@@ -21,10 +21,16 @@ class Emulator {
   [[nodiscard]] bool RomLoaded() { return m_rom_loaded; };
   void Start();
   void Reset();
+  void Pause();
+  void UnPause();
 
  private:
-  bool m_running{false};
   bool m_rom_loaded{false};
+  bool m_running{false};
+
+  bool m_paused{false};
+  bool m_paused_audio{false};
+
   bool m_draw{false};
 
   Rom m_rom{};
