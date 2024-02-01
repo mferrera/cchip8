@@ -21,12 +21,16 @@ void Audio::Reset() {
   m_audio_buffer.fill(0);
 }
 
-void Audio::StartBeep() {
+void Audio::StartTone() {
   SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(m_stream));
 }
 
-void Audio::StopBeep() {
+void Audio::PauseTone() {
   SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(m_stream));
+}
+
+bool Audio::IsPaused() const {
+  return SDL_AudioDevicePaused(SDL_GetAudioStreamDevice(m_stream)) == SDL_TRUE;
 }
 
 double Audio::GetSample() const {
