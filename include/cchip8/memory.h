@@ -73,6 +73,9 @@ class Memory {
   void Reset();
   bool LoadProgram(const Rom& rom, const size_t location);
 
+  void ClearVram() { vram.fill(false); }
+  void ClearRam() { ram.fill(0); }
+
   void DumpMem() const;
   void DumpStack() const;
   void PrintByte(const uint8_t& byte) const;

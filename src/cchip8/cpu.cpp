@@ -22,7 +22,7 @@ void Cpu::Reset() {
 uint8_t Cpu::RandomByte() const {
   std::random_device rd;
   std::mt19937 rng(rd());
-  std::uniform_int_distribution<int> distribution(0, 255);
+  std::uniform_int_distribution<int> distribution(0, 0xFF);
   return distribution(rng);
 }
 
@@ -41,7 +41,7 @@ void Cpu::SYS(){};
 /* 00E0 - CLS
  * Clear the display.
  */
-void Cpu::CLS(Memory &memory) { memory.vram.fill(false); };
+void Cpu::CLS(Memory &memory) { memory.ClearVram(); };
 
 /* 00EE - RET
  * Return from a subroutine.
@@ -172,7 +172,7 @@ void Cpu::XOR_VX_VY(const Instruction &instruction) {
 void Cpu::ADD_VX_VY(const Instruction &instruction) {
   uint16_t sum = registers.at(instruction.x()) + registers.at(instruction.y());
   registers.at(instruction.x()) = sum & 0xFF;
-  registers.at(Registers::VF) = (sum > 255) ? 1 : 0;
+  registers.at(Registers::VF) = (sum > 0xFF) ? 1 : 0;
 };
 
 /* 8xy5 - SUB Vx, Vy
@@ -183,7 +183,7 @@ void Cpu::ADD_VX_VY(const Instruction &instruction) {
  */
 void Cpu::SUB_VX_VY(const Instruction &instruction) {
   registers.at(Registers::VF) =
-      (registers.at(instruction.x()) > registers.at(instruction.y())) ? 1 : 0;
+      (registers.at(instruction.x()) >= registers.at(instruction.y())) ? 1 : 0;
   registers.at(instruction.x()) -= registers.at(instruction.y());
 };
 
@@ -194,7 +194,7 @@ void Cpu::SUB_VX_VY(const Instruction &instruction) {
  * Then Vx is divided by 2.
  */
 void Cpu::SHR_VX(const Instruction &instruction) {
-  registers.at(Registers::VF) = registers.at(instruction.x()) & 0x1;
+  registers.at(Registers::VF) = registers.at(instruction.x()) & 0x01;
   registers.at(instruction.x()) >>= 1;
 };
 
@@ -206,7 +206,7 @@ void Cpu::SHR_VX(const Instruction &instruction) {
  */
 void Cpu::SUBN_VX_VY(const Instruction &instruction) {
   registers.at(Registers::VF) =
-      (registers.at(instruction.y()) > registers.at(instruction.x())) ? 1 : 0;
+      (registers.at(instruction.y()) >= registers.at(instruction.x())) ? 1 : 0;
   registers.at(instruction.x()) -= registers.at(instruction.y());
 };
 
