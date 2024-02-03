@@ -25,9 +25,11 @@ bool Emulator::LoadRom(const Rom& rom) {
 }
 
 void Emulator::Reset() {
+  m_reset = true;
   m_window.Clear();
   m_cpu.Reset();
-  m_memory.Reset();
+  m_rom_loaded = m_memory.LoadProgram(m_rom, PROGRAM_START);
+  m_cpu.pc = PROGRAM_START;
   m_input.Reset();
   m_audio.Reset();
 }
@@ -65,6 +67,7 @@ void Emulator::MainLoop() {
       lastDrawTime = currentTime;
       Update();
     }
+    if (m_reset) m_reset = false;
     std::this_thread::sleep_for(milliseconds(16));
   }
 }
@@ -105,8 +108,13 @@ void Emulator::UnPause() {
 void Emulator::HandleEvent(const SDL_Event& event) {
   switch (event.type) {
     case SDL_EVENT_KEY_DOWN:
-      if (event.key.keysym.sym == SDLK_SPACE) {
-        m_paused ? UnPause() : Pause();
+      switch (event.key.keysym.sym) {
+        case SDLK_SPACE:
+          m_paused ? UnPause() : Pause();
+          break;
+        case SDLK_ESCAPE:
+          Reset();
+          break;
       }
       break;
     case SDL_EVENT_QUIT:
@@ -126,7 +134,7 @@ void Emulator::PollEvents() {
 void Emulator::Update() {
   PollEvents();
 
-  if (m_paused) return;
+  if (m_paused || m_reset) return;
 
   for (auto tick = 0; tick < TICKS_PER_FRAME / 2; ++tick) {
     Tick();

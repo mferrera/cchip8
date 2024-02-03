@@ -30,6 +30,7 @@ class Emulator {
 
   bool m_paused{false};
   bool m_paused_audio{false};
+  bool m_reset{false};
 
   bool m_draw{false};
 
