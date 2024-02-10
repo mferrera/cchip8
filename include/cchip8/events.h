@@ -1,0 +1,11 @@
+#ifndef CCHIP8_EVENTS_H_
+#define CCHIP8_EVENTS_H_
+
+#include <SDL.h>
+
+#define SDL_RESUME_GAME SDL_EVENT_USER + 1
+#define SDL_RESET_GAME SDL_EVENT_USER + 2
+
+#define NUM_CUSTOM_EVENTS 2
+
+#endif  // CCHIP8_EVENTS_H_

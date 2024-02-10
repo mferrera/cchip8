@@ -22,14 +22,13 @@ class Emulator {
   void Start();
   void Reset();
   void Pause();
-  void UnPause();
+  void UnPause(bool resume_audio);
 
  private:
   bool m_rom_loaded{false};
   bool m_running{false};
 
   bool m_paused{false};
-  bool m_paused_audio{false};
   bool m_reset{false};
 
   bool m_draw{false};
@@ -46,8 +45,11 @@ class Emulator {
   void MainLoop();
   void UpdateTimers();
   void UpdateSound();
-  void HandleEvent(const SDL_Event& event);
+
   void PollEvents();
+  void HandleEvent(const SDL_Event& event);
+  void PollPauseEvents();
+  void HandlePauseEvent(const SDL_Event& event);
 
   Instruction Fetch();
   void Update();

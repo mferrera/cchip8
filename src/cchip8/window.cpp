@@ -14,6 +14,7 @@ bool Window::Init() {
   }
   SDL_SetWindowTitle(m_window, WINDOW_TITLE);
   m_display.Init(0, 0, m_renderer);
+  m_menu.Init(0, 0, m_renderer);
   running = true;
   return running;
 }
@@ -39,6 +40,13 @@ void Window::Draw(const Memory &memory) {
   Render();
 }
 
+void Window::DrawMenu(const Memory &memory) {
+  Clear();
+  DrawDisplay(memory);
+  m_menu.Display();
+  Render();
+}
+
 void Window::HandleEvent(const SDL_Event &event) {
   switch (event.type) {
     case SDL_EVENT_QUIT:
@@ -47,9 +55,27 @@ void Window::HandleEvent(const SDL_Event &event) {
   }
 }
 
+void Window::HandlePauseEvent(const SDL_Event &event) {
+  switch (event.type) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event.key.keysym.sym) {
+        case SDLK_UP:
+          m_menu.SelectUp();
+          break;
+        case SDLK_DOWN:
+          m_menu.SelectDown();
+          break;
+        case SDLK_RETURN:
+          m_menu.DoOption();
+          break;
+      }
+  }
+}
+
 void Window::Render() { SDL_RenderPresent(m_renderer); }
 
 void Window::Quit() {
+  m_menu.Quit();
   if (m_renderer != nullptr) SDL_DestroyRenderer(m_renderer);
   if (m_window != nullptr) SDL_DestroyWindow(m_window);
   SDL_QuitSubSystem(SDL_INIT_VIDEO);

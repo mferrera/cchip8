@@ -17,8 +17,8 @@ class Display {
   void HandleEvent(const SDL_Event& event);
 
  private:
-  float m_pos_x{0};
-  float m_pos_y{0};
+  float m_pos_x{0.0};
+  float m_pos_y{0.0};
   SDL_Renderer* m_renderer = nullptr;
 };
 
