@@ -1,6 +1,8 @@
 #include <SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <cchip8/cpu.h>
 #include <cchip8/emulator.h>
+#include <cchip8/events.h>
 #include <cchip8/input.h>
 #include <cchip8/memory.h>
 #include <cchip8/rom.h>
@@ -26,6 +28,7 @@ bool Emulator::LoadRom(const Rom& rom) {
 
 void Emulator::Reset() {
   m_reset = true;
+  m_paused = false;
   m_window.Clear();
   m_cpu.Reset();
   m_rom_loaded = m_memory.LoadProgram(m_rom, PROGRAM_START);
@@ -37,6 +40,14 @@ void Emulator::Reset() {
 bool Emulator::InitDevices() {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+    return false;
+  }
+  if (TTF_Init() < 0) {
+    SDL_Log("Unable to initialize TTF: %s\n", SDL_GetError());
+    return false;
+  }
+  if (SDL_RegisterEvents(NUM_CUSTOM_EVENTS) == (Uint32)-NUM_CUSTOM_EVENTS) {
+    printf("Unable to register custom SDL events: %s\n", SDL_GetError());
     return false;
   }
   auto initDisplay = m_window.Init();
@@ -89,19 +100,11 @@ void Emulator::UpdateSound() {
   }
 }
 
-void Emulator::Pause() {
-  m_paused = true;
-  if (!m_audio.IsPaused()) {
-    m_audio.PauseTone();
-    m_paused_audio = true;
-  }
-}
-
-void Emulator::UnPause() {
-  m_paused = false;
-  if (m_paused_audio) {
-    m_audio.StartTone();
-    m_paused_audio = false;
+void Emulator::PollEvents() {
+  while (SDL_PollEvent(&m_event) != 0) {
+    m_input.HandleEvent(m_event);
+    m_window.HandleEvent(m_event);
+    HandleEvent(m_event);
   }
 }
 
@@ -109,11 +112,8 @@ void Emulator::HandleEvent(const SDL_Event& event) {
   switch (event.type) {
     case SDL_EVENT_KEY_DOWN:
       switch (event.key.keysym.sym) {
-        case SDLK_SPACE:
-          m_paused ? UnPause() : Pause();
-          break;
         case SDLK_ESCAPE:
-          Reset();
+          Pause();
           break;
       }
       break;
@@ -123,11 +123,53 @@ void Emulator::HandleEvent(const SDL_Event& event) {
   }
 }
 
-void Emulator::PollEvents() {
+void Emulator::Pause() {
+  m_paused = true;
+  auto audio_playing = !m_audio.IsPaused();
+  if (audio_playing) {
+    m_audio.PauseTone();
+  }
+  while (m_paused) {
+    PollPauseEvents();
+    m_window.DrawMenu(m_memory);
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+  }
+  m_window.Draw(m_memory);
+  UnPause(audio_playing);
+}
+
+void Emulator::PollPauseEvents() {
   while (SDL_PollEvent(&m_event) != 0) {
-    m_input.HandleEvent(m_event);
-    m_window.HandleEvent(m_event);
-    HandleEvent(m_event);
+    HandlePauseEvent(m_event);
+    m_window.HandlePauseEvent(m_event);
+  }
+}
+
+void Emulator::HandlePauseEvent(const SDL_Event& event) {
+  switch (event.type) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (m_event.key.keysym.sym) {
+        case SDLK_ESCAPE:
+          m_paused = false;
+          return;
+      }
+      break;
+    case SDL_RESUME_GAME:
+      m_paused = false;
+      break;
+    case SDL_RESET_GAME:
+      Reset();
+      break;
+    case SDL_EVENT_QUIT:
+      m_paused = false;
+      m_running = false;
+      break;
+  }
+}
+
+void Emulator::UnPause(bool resume_audio) {
+  if (resume_audio) {
+    m_audio.StartTone();
   }
 }
 

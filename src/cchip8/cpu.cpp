@@ -367,7 +367,7 @@ void Cpu::ADD_I_VX(const Instruction &instruction) {
  * corresponding to the value of Vx.
  */
 void Cpu::LD_F_VX(const Instruction &instruction) {
-  I = SPRITES_LOCATION + (registers.at(instruction.x()) * 5);
+  I = SPRITES_LOCATION + (registers.at(instruction.x()) * SPRITE_SIZE);
 };
 
 /* Fx33 - LD B, Vx

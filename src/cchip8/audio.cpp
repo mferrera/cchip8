@@ -15,6 +15,7 @@ bool Audio::Init() {
 }
 
 void Audio::Reset() {
+  PauseTone();
   m_frequency = 440.0;
   m_volume = 32.0;
   m_wave_pos = 0.0;

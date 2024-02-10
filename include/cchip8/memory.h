@@ -8,10 +8,12 @@
 #include <cstdint>
 
 #define RAM_SIZE 4096
-#define SPRITES_SIZE 80
 #define STACK_SIZE 16
 
+#define SPRITES_SIZE 80
+#define SPRITE_SIZE 5
 #define SPRITES_LOCATION 0x50
+
 #define PROGRAM_START 0x200
 
 static constexpr std::array<uint8_t, SPRITES_SIZE> SPRITES = {

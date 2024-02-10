@@ -19,8 +19,13 @@ else()
   add_compile_options(-W -Wall)
 endif()
 
+include_directories(assets)
+configure_file(${CMAKE_SOURCE_DIR}/assets/PixeloidMono.ttf
+    ${PROJECT_SOURCE_DIR}/bin/assets/PixeloidMono.ttf COPYONLY)
+
 add_subdirectory(src)
 add_subdirectory(third_party/SDL)
+add_subdirectory(third_party/SDL_ttf)
 
 if(ENABLE_TESTING)
   include(CTest)
