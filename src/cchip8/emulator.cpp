@@ -47,7 +47,7 @@ bool Emulator::InitDevices() {
     return false;
   }
   if (SDL_RegisterEvents(NUM_CUSTOM_EVENTS) == (Uint32)-NUM_CUSTOM_EVENTS) {
-    printf("Unable to register custom SDL events: %s\n", SDL_GetError());
+    SDL_Log("Unable to register custom SDL events: %s\n", SDL_GetError());
     return false;
   }
   auto initDisplay = m_window.Init();
@@ -281,6 +281,7 @@ void Emulator::Tick() {
 Emulator::~Emulator() {
   m_window.Quit();
   m_audio.Quit();
+  TTF_Quit();
   SDL_Quit();
 }
 
