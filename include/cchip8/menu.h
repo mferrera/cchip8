@@ -22,6 +22,7 @@ struct MenuItem {
 };
 
 namespace cchip8 {
+
 class Menu {
  public:
   void Init(const float pos_x, const float pos_y, SDL_Renderer *renderer);
